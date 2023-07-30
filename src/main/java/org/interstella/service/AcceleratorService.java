@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface AcceleratorService {
     List<Accelerator> getAllAccelerators();
+    Accelerator getAcceleratorById(String acceleratorID);
 }

@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface AcceleratorRepository {
     List<Accelerator> findAll();
+    Accelerator findById(String acceleratorID);
 }

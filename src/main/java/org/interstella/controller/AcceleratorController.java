@@ -29,4 +29,15 @@ public class AcceleratorController {
             return ResponseEntity.ok(accelerators);
         }
     }
+
+    @GetMapping("/{acceleratorID}")
+    public ResponseEntity<Accelerator> getAccelerator(@PathVariable String acceleratorID) {
+        Accelerator accelerator = acceleratorService.getAcceleratorById(acceleratorID);
+
+        if (accelerator != null) {
+            return ResponseEntity.ok(accelerator);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

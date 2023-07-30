@@ -18,4 +18,9 @@ public class AcceleratorServiceImpl implements AcceleratorService {
     public List<Accelerator> getAllAccelerators() {
         return acceleratorRepository.findAll();
     }
+
+    @Override
+    public Accelerator getAcceleratorById(String acceleratorID) {
+        return acceleratorRepository.findById(acceleratorID);
+    }
 }

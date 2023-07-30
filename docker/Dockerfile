@@ -1,0 +1,5 @@
+FROM postgres:15
+
+ENV TZ=Europe/London
+ENV POSTGRES_INITDB_ARGS="--encoding=UTF-8"
+ENV ALLOW_IP_RANGE=0.0.0.0/0

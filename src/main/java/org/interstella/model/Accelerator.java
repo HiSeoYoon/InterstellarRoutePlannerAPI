@@ -7,6 +7,15 @@ public class Accelerator {
     private String name;
     private List<AcceleratorConnection> connections;
 
+    public Accelerator() {
+    }
+
+    public Accelerator(String id, String name, List<AcceleratorConnection> connections) {
+        this.id = id;
+        this.name = name;
+        this.connections = connections;
+    }
+
     public String getId() {
         return id;
     }

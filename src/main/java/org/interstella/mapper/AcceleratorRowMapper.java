@@ -17,8 +17,8 @@ public class AcceleratorRowMapper implements RowMapper<Accelerator> {
     @Override
     public Accelerator mapRow(ResultSet rs, int rowNum) throws SQLException {
         Accelerator accelerator = new Accelerator();
-        accelerator.setId(rs.getString("source_accelerator_name"));
-        accelerator.setName(rs.getString("source_accelerator_id"));
+        accelerator.setId(rs.getString("source_accelerator_id"));
+        accelerator.setName(rs.getString("source_accelerator_name"));
 
         List<AcceleratorConnection> connections = new ArrayList<>();
         String jsonConnections = rs.getString("connections");

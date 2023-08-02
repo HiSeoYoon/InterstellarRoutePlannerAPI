@@ -1,8 +1,8 @@
 package org.interstella.controller;
 
 import org.hamcrest.Matchers;
+import org.interstella.dto.AcceleratorDto;
 import org.interstella.dto.RouteResponse;
-import org.interstella.model.Accelerator;
 import org.interstella.model.AcceleratorConnection;
 import org.interstella.service.AcceleratorService;
 import org.junit.jupiter.api.Test;
@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -32,17 +33,80 @@ class AcceleratorControllerTest {
     private AcceleratorService acceleratorService;
 
     @Test
+    public void testGetAllAccelerators_ValidInput() throws Exception {
+        AcceleratorConnection connection1 = new AcceleratorConnection("ARC", 200);
+        AcceleratorConnection connection2 = new AcceleratorConnection("DEN", 120);
+        AcceleratorConnection connection3 = new AcceleratorConnection("PRO", 80);
+
+        List<AcceleratorDto> expectedAccelerators = Arrays.asList(
+                new AcceleratorDto("SOL", "Sol", Arrays.asList(connection1)),
+                new AcceleratorDto("ARC", "Arcturus", Arrays.asList(connection2, connection3))
+        );
+
+        when(acceleratorService.getAllAccelerators()).thenReturn(expectedAccelerators);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/accelerators")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(2)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value("SOL"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value("Sol"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].connections.[0].id").value("ARC"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].connections.[0].distance").value("200"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].id").value("ARC"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].name").value("Arcturus"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].connections.[0].id").value("DEN"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].connections.[0].distance").value("120"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].connections.[1].id").value("PRO"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].connections.[1].distance").value("80"));
+    }
+
+    @Test
+    public void testGetAllAccelerators_InvalidInput() throws Exception {
+        when(acceleratorService.getAllAccelerators()).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/accelerators")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    public void testGetAccelerator_ValidInput() throws Exception {
+        AcceleratorConnection connection1 = new AcceleratorConnection("ARC", 200);
+        AcceleratorDto expectedAccelerator = new AcceleratorDto("SOL", "Sol", Arrays.asList(connection1));
+
+        when(acceleratorService.getAcceleratorById("SOL")).thenReturn(expectedAccelerator);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/accelerators/SOL")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value("SOL"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Sol"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.connections.[0].id").value("ARC"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.connections.[0].distance").value("200"));
+    }
+
+    @Test
+    public void testGetAccelerator_InvalidInput() throws Exception {
+        when(acceleratorService.getAcceleratorById("NON_EXISTENT_ID")).thenReturn(null);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/accelerators/NON_EXISTENT_ID")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
     public void testGetCheapestRoute_ValidInput() throws Exception {
         AcceleratorConnection connection1 = new AcceleratorConnection("ARC", 200);
         AcceleratorConnection connection2 = new AcceleratorConnection("DEN", 120);
         AcceleratorConnection connection3 = new AcceleratorConnection("PRO", 80);
 
-        Accelerator accelerator1 = new Accelerator("SOL", "Sol", Arrays.asList(connection1));
-        Accelerator accelerator2 = new Accelerator("ARC", "Arcturus", Arrays.asList(connection2, connection3));
-        Accelerator accelerator3 = new Accelerator("DEN", "Denebula", Collections.emptyList());
-        Accelerator accelerator4 = new Accelerator("PRO", "Procyon", Collections.emptyList());
+        AcceleratorDto accelerator1 = new AcceleratorDto("SOL", "Sol", Arrays.asList(connection1));
+        AcceleratorDto accelerator2 = new AcceleratorDto("ARC", "Arcturus", Arrays.asList(connection2, connection3));
+        AcceleratorDto accelerator3 = new AcceleratorDto("DEN", "Denebula", Collections.emptyList());
+        AcceleratorDto accelerator4 = new AcceleratorDto("PRO", "Procyon", Collections.emptyList());
 
-        List<Accelerator> mockAccelerators = Arrays.asList(accelerator1, accelerator2, accelerator3, accelerator4);
+        List<AcceleratorDto> mockAccelerators = Arrays.asList(accelerator1, accelerator2, accelerator3, accelerator4);
 
         when(acceleratorService.getAllAccelerators()).thenReturn(mockAccelerators);
 

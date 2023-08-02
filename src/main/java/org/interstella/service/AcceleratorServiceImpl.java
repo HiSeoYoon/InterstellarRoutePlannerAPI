@@ -1,5 +1,6 @@
 package org.interstella.service;
 
+import org.interstella.dto.AcceleratorDto;
 import org.interstella.dto.RouteRequest;
 import org.interstella.dto.RouteResponse;
 import org.interstella.model.Accelerator;
@@ -26,13 +27,54 @@ public class AcceleratorServiceImpl implements AcceleratorService {
     }
 
     @Override
-    public List<Accelerator> getAllAccelerators() {
-        return acceleratorRepository.findAll();
+    public List<AcceleratorDto> getAllAccelerators() {
+        List<Accelerator> accelerators;
+
+        try {
+            accelerators = acceleratorRepository.findAll();
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to fetch accelerators from the database");
+        }
+
+        if (accelerators == null) {
+            throw new RuntimeException("No accelerators found in the database");
+        }
+
+        List<AcceleratorDto> acceleratorDtos = new ArrayList<>();
+
+        for (Accelerator acc : accelerators) {
+            AcceleratorDto dto = new AcceleratorDto();
+            dto.setId(acc.getId());
+            dto.setName(acc.getName());
+            dto.setConnections(acc.getConnections());
+            acceleratorDtos.add(dto);
+        }
+
+        return acceleratorDtos;
     }
 
     @Override
-    public Accelerator getAcceleratorById(String acceleratorID) {
-        return acceleratorRepository.findById(acceleratorID);
+    public AcceleratorDto getAcceleratorById(String acceleratorID) {
+        Accelerator accelerator;
+
+        try {
+            accelerator = acceleratorRepository.findById(acceleratorID);
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to fetch accelerators from the database");
+        }
+
+        if (accelerator == null) {
+            throw new RuntimeException("No accelerators found in the database");
+        }
+
+        AcceleratorDto acceleratorDto = new AcceleratorDto();
+        acceleratorDto.setId(accelerator.getId());
+        acceleratorDto.setName(accelerator.getName());
+        acceleratorDto.setConnections(accelerator.getConnections());
+
+        return acceleratorDto;
     }
 
     @Override

@@ -1,8 +1,8 @@
 package org.interstella.controller;
 
+import org.interstella.dto.AcceleratorDto;
 import org.interstella.dto.RouteRequest;
 import org.interstella.dto.RouteResponse;
-import org.interstella.model.Accelerator;
 import org.interstella.service.AcceleratorService;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -25,8 +25,8 @@ public class AcceleratorController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Accelerator>> getAllAccelerators() {
-        List<Accelerator> accelerators = acceleratorService.getAllAccelerators();
+    public ResponseEntity<List<AcceleratorDto>> getAllAccelerators() {
+        List<AcceleratorDto> accelerators = acceleratorService.getAllAccelerators();
 
         if (accelerators.size() == 0) {
             return ResponseEntity.notFound().build();
@@ -36,8 +36,8 @@ public class AcceleratorController {
     }
 
     @GetMapping("/{acceleratorID}")
-    public ResponseEntity<Accelerator> getAccelerator(@PathVariable String acceleratorID) {
-        Accelerator accelerator = acceleratorService.getAcceleratorById(acceleratorID);
+    public ResponseEntity<AcceleratorDto> getAccelerator(@PathVariable String acceleratorID) {
+        AcceleratorDto accelerator = acceleratorService.getAcceleratorById(acceleratorID);
 
         if (accelerator != null) {
             return ResponseEntity.ok(accelerator);

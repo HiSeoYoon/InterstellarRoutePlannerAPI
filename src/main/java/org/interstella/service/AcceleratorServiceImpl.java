@@ -6,6 +6,8 @@ import org.interstella.dto.RouteResponse;
 import org.interstella.model.Accelerator;
 import org.interstella.model.AcceleratorConnection;
 import org.interstella.repository.AcceleratorRepositoryImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,8 @@ import java.util.HashMap;
 
 @Service
 public class AcceleratorServiceImpl implements AcceleratorService {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+
     private AcceleratorRepositoryImpl acceleratorRepository;
 
     private static final double SPACEFLIGHT_COST_PER_PASSENGER_HU = 0.10;
@@ -31,13 +35,15 @@ public class AcceleratorServiceImpl implements AcceleratorService {
         List<Accelerator> accelerators;
 
         try {
+            log.info("Fetching all accelerators from the database");
             accelerators = acceleratorRepository.findAll();
         } catch (DataAccessException e) {
-            e.printStackTrace();
+            log.error("Failed to fetch accelerators from the database", e);
             throw new RuntimeException("Failed to fetch accelerators from the database");
         }
 
         if (accelerators == null) {
+            log.warn("No accelerators found in the database");
             throw new RuntimeException("No accelerators found in the database");
         }
 
@@ -51,6 +57,7 @@ public class AcceleratorServiceImpl implements AcceleratorService {
             acceleratorDtos.add(dto);
         }
 
+        log.info("Successfully fetched all accelerators");
         return acceleratorDtos;
     }
 
@@ -59,13 +66,15 @@ public class AcceleratorServiceImpl implements AcceleratorService {
         Accelerator accelerator;
 
         try {
+            log.info("Fetching accelerator by ID: {}", acceleratorID);
             accelerator = acceleratorRepository.findById(acceleratorID);
         } catch (DataAccessException e) {
-            e.printStackTrace();
+            log.error("Failed to fetch accelerator from the database", e);
             throw new RuntimeException("Failed to fetch accelerators from the database");
         }
 
         if (accelerator == null) {
+            log.warn("No accelerator found in the database with ID: {}", acceleratorID);
             throw new RuntimeException("No accelerators found in the database");
         }
 
@@ -74,6 +83,7 @@ public class AcceleratorServiceImpl implements AcceleratorService {
         acceleratorDto.setName(accelerator.getName());
         acceleratorDto.setConnections(accelerator.getConnections());
 
+        log.info("Successfully fetched accelerator by ID: {}", acceleratorID);
         return acceleratorDto;
     }
 
@@ -82,23 +92,27 @@ public class AcceleratorServiceImpl implements AcceleratorService {
         List<Accelerator> accelerators;
 
         try {
+            log.info("Fetching all accelerators from the database");
             accelerators = acceleratorRepository.findAll();
         } catch (DataAccessException e) {
-            e.printStackTrace();
+            log.error("Failed to fetch accelerators from the database", e);
             throw new RuntimeException("Failed to fetch accelerators from the database");
         }
 
         if (accelerators == null) {
+            log.warn("No accelerators found in the database");
             throw new RuntimeException("No accelerators found in the database");
         }
 
         if (getAccelerator(accelerators, routeRequest.getSource()) == null ||
                 getAccelerator(accelerators, routeRequest.getDestination()) == null) {
+            log.warn("No accelerator not found by Id: {}, {}", routeRequest.getSource(), routeRequest.getDestination());
             return null;
         }
 
         List<String> cheapestRoute = dijkstra(accelerators, routeRequest.getSource(), routeRequest.getDestination());
         if (cheapestRoute == null) {
+            log.warn("No routes between {}, {}", routeRequest.getSource(), routeRequest.getDestination());
             return null;
         }
 
@@ -108,8 +122,8 @@ public class AcceleratorServiceImpl implements AcceleratorService {
         routeResponse.setRoutes(cheapestRoute);
         routeResponse.setJourneyFee(cheapestJourneyFee);
 
+        log.info("Successfully fetched all accelerators");
         return routeResponse;
-
     }
 
     private List<String> dijkstra(List<Accelerator> accelerators, String sourceId, String targetId) {

@@ -1,3 +1,5 @@
+### !Before running the project, you must run the Docker to make it work with the DB.
+
 # How to run docker
 
 ```
@@ -16,6 +18,7 @@ docker ps
 docker exec -it <<your catainer name>> bash
 psql -U root -W -h localhost -d test_db
 ```
+container name : seoyoon-postgres-db
 
 ### List tables
 
@@ -36,3 +39,8 @@ psql -U root -W -h localhost -d test_db
 SELECT * FROM accelerators;
 SELECT * FROM accelerator_connections;
 ```
+
+### Swagger address
+
+http://localhost:8080/swagger-ui/#
+

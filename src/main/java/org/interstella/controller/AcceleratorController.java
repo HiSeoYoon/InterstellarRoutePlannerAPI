@@ -1,5 +1,9 @@
 package org.interstella.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.interstella.dto.AcceleratorDto;
 import org.interstella.dto.RouteRequest;
 import org.interstella.dto.RouteResponse;
@@ -19,6 +23,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/accelerators")
+@Api(tags = "Accelerator API", description = "Endpoints for managing accelerators")
 public class AcceleratorController {
     private AcceleratorService acceleratorService;
     private final Logger logger = LoggerFactory.getLogger(AcceleratorController.class);
@@ -27,6 +32,11 @@ public class AcceleratorController {
         this.acceleratorService = acceleratorService;
     }
 
+    @ApiOperation("Get accelerator information list")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Successfully retrieved accelerator information list"),
+            @ApiResponse(code = 404, message = "No accelerators found")
+    })
     @GetMapping
     public ResponseEntity<List<AcceleratorDto>> getAllAccelerators() {
         List<AcceleratorDto> accelerators = acceleratorService.getAllAccelerators();
@@ -40,6 +50,11 @@ public class AcceleratorController {
         }
     }
 
+    @ApiOperation("Get accelerator information by Id")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Successfully retrieved accelerator information"),
+            @ApiResponse(code = 404, message = "No accelerator found with the given ID")
+    })
     @GetMapping("/{acceleratorID}")
     public ResponseEntity<AcceleratorDto> getAccelerator(@PathVariable String acceleratorID) {
         logger.info("Getting accelerator with ID: {}", acceleratorID);
@@ -54,6 +69,11 @@ public class AcceleratorController {
         }
     }
 
+    @ApiOperation("Get cheapest route from source accelerator to target accelerator")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Successfully retrieved cheapest route information"),
+            @ApiResponse(code = 404, message = "No cheapest route found from the source to the target accelerator")
+    })
     @GetMapping("/{acceleratorID}/to/{targetAcceleratorID}")
     public ResponseEntity<RouteResponse> getCheapestRoute(@PathVariable String acceleratorID, @PathVariable String targetAcceleratorID) {
         logger.info("Getting cheapest route from {} to {}", acceleratorID, targetAcceleratorID);

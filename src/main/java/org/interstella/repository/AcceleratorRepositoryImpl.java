@@ -1,7 +1,9 @@
 package org.interstella.repository;
 
+import org.interstella.mapper.AcceleratorRouteRowMapper;
 import org.interstella.mapper.AcceleratorRowMapper;
 import org.interstella.model.Accelerator;
+import org.interstella.model.AcceleratorRoute;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -35,5 +37,17 @@ public class AcceleratorRepositoryImpl implements AcceleratorRepository {
                 "JOIN accelerator_connections a2 ON a1.accelerator_id = a2.source_accelerator_id and a1.accelerator_id = ? " +
                 "GROUP BY a1.accelerator_name, a2.source_accelerator_id";
         return jdbcTemplate.queryForObject(sql, new AcceleratorRowMapper(), acceleratorID);
+    }
+
+    @Override
+    public int insertRoute(AcceleratorRoute acceleratorRoute) {
+        String sql = "INSERT INTO accelerator_route (source_accelerator_id, target_accelerator_id, journey_routes, journey_fee) VALUES (?, ?, ?, ?)";
+        return jdbcTemplate.update(sql, acceleratorRoute.getSourceAcceleratorId(), acceleratorRoute.getTargetAcceleratorId(), acceleratorRoute.getJourneyRoute(), acceleratorRoute.getJourneyFee());
+    }
+
+    @Override
+    public AcceleratorRoute findBySourceAndDestination(String sourceAcceleratorId, String targetAcceleratorId) {
+        String sql = "SELECT source_accelerator_id, target_accelerator_id, journey_routes, journey_fee FROM accelerator_route WHERE source_accelerator_id = ? AND target_accelerator_id = ?";
+        return jdbcTemplate.queryForObject(sql, new AcceleratorRouteRowMapper(), sourceAcceleratorId, targetAcceleratorId);
     }
 }

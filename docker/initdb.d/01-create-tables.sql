@@ -14,4 +14,12 @@ CREATE TABLE accelerator_connections (
     FOREIGN KEY (target_accelerator_id) REFERENCES accelerators (accelerator_id)
 );
 
+CREATE TABLE accelerator_route (
+    id SERIAL PRIMARY KEY,
+    source_accelerator_id VARCHAR(10) NOT NULL,
+    target_accelerator_id VARCHAR(10) NOT NULL,
+    journey_routes VARCHAR[] NOT NULL,
+    journey_fee DOUBLE PRECISION NOT NULL
+);
+
 END;
